@@ -5,6 +5,6 @@ const placeRoutes = require('./routes/places-routes')
 
 const server = express()
 
-server.use(placeRoutes)
+server.use('/api/places', placeRoutes)
 
 server.listen(5000)
