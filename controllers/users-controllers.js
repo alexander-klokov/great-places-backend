@@ -1,4 +1,5 @@
 const {uuid} = require('uuidv4')
+const {validationResult} = require('express-validator')
 
 const HttpError = require('../models/http-error')
 
@@ -22,15 +23,24 @@ const getUsers = (req, res, next) => {
 }
 
 const signup = (req, res, next) => {
-    const {name, email, password} = req.body
+  // check if any error detected
+  const errors = validationResult(req)
+  console.log(errors)
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError(`Could not create the user, invalid input: ${errors.array()[0].param}`, 422)
+    )
+  }
 
-    // check if the email is already used
-    const emailUsed = DUMMY_USERS.some(user => user.email === email)
-    if (emailUsed) {
-        return next(
-            new HttpError('Could not create the user, the email is already used', 422)
-        )        
-    }
+  const {name, email, password} = req.body
+
+  // check if the email is already used
+  const emailUsed = DUMMY_USERS.some(user => user.email === email)
+  if (emailUsed) {
+    return next(
+        new HttpError('Could not create the user, the email is already used', 422)
+    )        
+  }
 
     // the user may be created
 
