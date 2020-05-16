@@ -1,8 +1,7 @@
-const axios = require('axios');
-
+const axios = require('axios')
 const HttpError = require('../models/http-error')
 
-const API_KEY = 'AIzaSyDcN6aEVRx_cDj1rgiICZgFwRJksAW7kJA'
+const {API_KEY} = process.env
 
 async function getPlaceData(address) {
   const response = await axios.get(
