@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose');
 
 require('dotenv').config()
 
@@ -28,4 +29,14 @@ server.use((error, req, res, next) => {
       .json({message: error.message || 'An unknown error occurred!'})
 })
 
-server.listen(5000)
+// Mongo
+const {MONGO_USERNAME, MONGO_PASSWORD} = process.env
+const DB_NAME = 'places'
+
+const MONGO_URL = 
+  `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0-nfxjk.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`
+
+mongoose
+  .connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+  .then(() => server.listen(5000))
+  .catch(err => console.error(err))
