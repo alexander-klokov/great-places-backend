@@ -31,7 +31,7 @@ server.use((error, req, res, next) => {
 
 // Mongo
 const {MONGO_USERNAME, MONGO_PASSWORD} = process.env
-const DB_NAME = 'places'
+const DB_NAME = 'greatplaces'
 
 const MONGO_URL = 
   `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0-nfxjk.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`
