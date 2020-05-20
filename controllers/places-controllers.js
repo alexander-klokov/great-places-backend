@@ -5,8 +5,6 @@ const HttpError = require('../models/http-error')
 const getPlaceData = require('../util/location')
 const Place = require('../models/place')
 
-let DUMMY_PLACES = require ('./dummy_places')
-
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid
 
@@ -142,16 +140,25 @@ const updatePlace = async (req, res, next) => {
   res.status(200).json({place: placeToUpdate.toObject({getters: true})});
 }
 
-const deletePlace = (req, res, next) => {
+const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid
 
-  if (!DUMMY_PLACES.find(place => place.id === placeId)) {
+  let placeToDelete
+  try {
+    placeToDelete = await Place.findById(placeId)
+  } catch (err) {
     return next(
-      new HttpError('Could not find a place for the provided id.', 404)
+      new HttpError('Something went wrong, could not find the place', 500)
     )
   }
 
-  DUMMY_PLACES = DUMMY_PLACES.filter(place => place.id !== placeId)
+  try {
+    await placeToDelete.remove()
+  } catch (err) {
+    return next(
+      new HttpError('Something went wrong, could not delete the place', 500)
+    )
+  }
 
   res.status(200).json({message: `Delete place ${placeId}`})
 }
