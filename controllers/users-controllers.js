@@ -72,10 +72,19 @@ const signup = async (req, res, next) => {
     res.status(201).json({user: userCreated.toObject({getters: true})})
 }
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
     const {email, password} = req.body
 
-    const userIdentified = DUMMY_USERS.find(user => user.email === email)
+    // check if the email is already used
+    let userIdentified
+
+    try {
+      userIdentified = await User.findOne({email})
+    } catch (err) {
+      return next(
+        new HttpError('Logging in failed', 500)
+      )              
+    }
 
     if (!userIdentified || userIdentified.password !== password) {
         return next(
