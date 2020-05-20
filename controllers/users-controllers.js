@@ -4,34 +4,19 @@ const {validationResult} = require('express-validator')
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
 
-const DUMMY_USERS = [
-    {
-        id: 'u1',
-        name: 'Max Swartz',
-        email: 'max@test.com',
-        password: 'password-max'
-    },
-    {
-        id: 'u2',
-        name: 'Lev Tolstoi',
-        email: 'lev@test.com',
-        password: 'password-lev'
-    },
-]
-
 const getUsers = async (req, res, next) => {
-    let users
-    try {
-      users = await User.find({}, '-password')
-    } catch (error) {
-        return next(
-            new HttpError(`Fetching users failed`, 500)
-        )
-    }
+  let users
+  try {
+    users = await User.find({}, '-password')
+  } catch (error) {
+    return next(
+      new HttpError(`Fetching users failed`, 500)
+    )
+  }
 
-    res.json({
-        users: users.map(user => user.toObject({getters: true}))
-    })
+  res.json({
+    users: users.map(user => user.toObject({getters: true}))
+  })
 }
 
 const signup = async (req, res, next) => {
@@ -44,7 +29,7 @@ const signup = async (req, res, next) => {
     )
   }
 
-  const {name, email, password, places} = req.body
+  const {name, email, password} = req.body
 
   // check if the email is already used
   let emailUsed
@@ -69,7 +54,7 @@ const signup = async (req, res, next) => {
         email,
         password,
         image: 'https://image.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg',
-        places
+        places: []
     })
   
     try {
