@@ -2,6 +2,7 @@ const {uuid} = require('uuidv4')
 const {validationResult} = require('express-validator')
 
 const HttpError = require('../models/http-error')
+const User = require('../models/user')
 
 const DUMMY_USERS = [
     {
@@ -22,7 +23,7 @@ const getUsers = (req, res, next) => {
     res.json({users: DUMMY_USERS})
 }
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
   // check if any error detected
   const errors = validationResult(req)
   console.log(errors)
@@ -32,10 +33,19 @@ const signup = (req, res, next) => {
     )
   }
 
-  const {name, email, password} = req.body
+  const {name, email, password, places} = req.body
 
   // check if the email is already used
-  const emailUsed = DUMMY_USERS.some(user => user.email === email)
+  let emailUsed
+
+  try {
+    emailUsed = await User.findOne({email})
+  } catch (err) {
+    return next(
+        new HttpError('Signing up failed', 500)
+    )              
+  }
+
   if (emailUsed) {
     return next(
         new HttpError('Could not create the user, the email is already used', 422)
@@ -43,17 +53,23 @@ const signup = (req, res, next) => {
   }
 
     // the user may be created
-
-    const userCreated = {
-        id: uuid(),
+    const userCreated = new User ({
         name,
         email,
-        password
+        password,
+        image: 'https://image.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg',
+        places
+    })
+  
+    try {
+        await userCreated.save()
+    } catch (e) {
+        return next(
+          new HttpError(`Signing up failed`, 500)
+        )
     }
-
-    DUMMY_USERS.push(userCreated)
-
-    res.status(201).json({user: userCreated})
+    
+    res.status(201).json({user: userCreated.toObject({getters: true})})
 }
 
 const login = (req, res, next) => {
