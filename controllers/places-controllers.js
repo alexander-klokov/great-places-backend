@@ -34,24 +34,24 @@ const getPlaceById = async (req, res, next) => {
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid
 
-  let places
+  let userWithPlaces
 
   try {
-    places = await Place.find({creator: userId})
+    userWithPlaces = await User.findById(userId).populate('places')
   } catch (err) {
     return next(
       new HttpError('Fetching places failed.', 500)
     )
   }
   
-  if (!places || !places.length) {
+  if (!userWithPlaces || !userWithPlaces.places || !userWithPlaces.places.length) {
     return next(
       new HttpError('Could not find places for the provided user id.', 404)
     )
   }
 
   res.json({
-    places: places.map(place => place.toObject({getters: true}))
+    places: (userWithPlaces.places || []).map(place => place.toObject({getters: true}))
   })
 }
 
