@@ -94,7 +94,7 @@ const login = async (req, res, next) => {
     }
 
     // respond with a message
-    res.json({message: "Logged in"})
+    res.json({user: userIdentified.toObject({getters: true})})
 }
 
 exports.getUsers = getUsers
