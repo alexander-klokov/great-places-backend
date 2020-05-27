@@ -39,11 +39,10 @@ server.use((error, req, res, next) => {
 })
 
 // Mongo
-const {MONGO_USERNAME, MONGO_PASSWORD} = process.env
-const DB_NAME = 'great-places'
+const {MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB_NAME} = process.env
 
 const MONGO_URL = 
-  `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0-nfxjk.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`
+  `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0-nfxjk.mongodb.net/${MONGO_DB_NAME}?retryWrites=true&w=majority`
 
 mongoose
   .connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
