@@ -1,3 +1,4 @@
+const fs = require('fs')
 const {validationResult} = require('express-validator')
 const mongoose = require('mongoose')
 
@@ -206,6 +207,8 @@ const deletePlace = async (req, res, next) => {
     )
   }
 
+  const imagePath = placeToDelete.image
+
   // delete the place and adjust the associated user info
   try {
     const session = await mongoose.startSession()
@@ -220,6 +223,8 @@ const deletePlace = async (req, res, next) => {
       new HttpError('Failed on deleting place', 500)
     )
   }
+
+  fs.unlink(imagePath, e => console.error(e))
 
   // respond with the message
   res.status(200).json({message: `Delete place ${placeId}`})
