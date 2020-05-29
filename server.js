@@ -1,3 +1,4 @@
+const fs = require('fs')
 const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
@@ -30,10 +31,12 @@ server.use((req, res, next) => {
 })
 
 server.use((error, req, res, next) => {
+  if (req.file) {
+      fs.unlink(req.file.path, e => console.error(e))
+    }
     if (res.headerSent) {
         return next(error)
     }
-    console.error('here', error)
     res.status(error.code || 500)
       .json({message: error.message || 'An unknown error occurred!'})
 })
@@ -47,4 +50,4 @@ const MONGO_URL =
 mongoose
   .connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
   .then(() => server.listen(5000))
-  .catch(err => console.error(err))
+  .catch(e => console.error(e))

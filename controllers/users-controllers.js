@@ -54,7 +54,7 @@ const signup = async (req, res, next) => {
         name,
         email,
         password,
-        image: 'https://image.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg',
+        image: req.file.path,
         places: []
     })
   
