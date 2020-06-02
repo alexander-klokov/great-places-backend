@@ -1,5 +1,6 @@
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
@@ -78,9 +79,27 @@ const signup = async (req, res, next) => {
       new HttpError(`Saving the new user failed`, 500)
     )
   }
+
+  // generate a token
+  let token
+  try {
+    token = jwt.sign(
+      {userId: userCreated.id, email: userCreated.email},
+      'temporary_code',
+      {expiresIn: '1h'}
+    )
+  } catch (e) {
+    return next(
+      new HttpError(`Saving the new user failed`, 500)
+    )
+  }
     
   // respond with the user created
-  res.status(201).json({user: userCreated.toObject({getters: true})})
+  res.status(201).json({
+    userId: userCreated.id, 
+    email: userCreated.email, 
+    token
+  })
 }
 
 const login = async (req, res, next) => {
@@ -118,9 +137,26 @@ const login = async (req, res, next) => {
         new HttpError('Could not identify a user, credentials seem wrong', 401)
       )        
     }
-    
+
+    let token
+    try {
+      token = jwt.sign(
+        {userId: userIdentified.id, email: userIdentified.email},
+        'temporary_code',
+        {expiresIn: '1h'}
+      )
+    } catch (e) {
+      return next(
+        new HttpError(`Logging in failed`, 500)
+      )
+    }
+  
     // respond with a message
-    res.json({user: userIdentified.toObject({getters: true})})
+    res.json({
+      userId: userIdentified.id,
+      email: userIdentified.email,
+      token
+    })
 }
 
 exports.getUsers = getUsers
