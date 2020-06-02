@@ -1,4 +1,5 @@
 const {validationResult} = require('express-validator')
+const bcrypth = require('bcryptjs')
 
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
@@ -49,27 +50,37 @@ const signup = async (req, res, next) => {
     )        
   }
 
-    // create a new user
-    const userCreated = new User ({
-        name,
-        email,
-        password,
-        image: req.file.path,
-        places: []
-    })
+  let hashedPassword
+
+  try {
+    hashedPassword = await bcrypth.hash(password, 12)
+  } catch (e) {
+    return next(
+      new HttpError('Could not create the user', 500)
+    )        
+  }
+
+  // create a new user
+  const userCreated = new User ({
+    name,
+    email,
+    password: hashedPassword,
+    image: req.file.path,
+    places: []
+  })
   
-    // save the user
-    try {
-        await userCreated.save()
-    } catch (e) {
-        console.error(e)
-        return next(
-          new HttpError(`Saving the new user failed`, 500)
-        )
-    }
+  // save the user
+  try {
+    await userCreated.save()
+  } catch (e) {
+    console.error(e)
+    return next(
+      new HttpError(`Saving the new user failed`, 500)
+    )
+  }
     
-    // respond with the user created
-    res.status(201).json({user: userCreated.toObject({getters: true})})
+  // respond with the user created
+  res.status(201).json({user: userCreated.toObject({getters: true})})
 }
 
 const login = async (req, res, next) => {
