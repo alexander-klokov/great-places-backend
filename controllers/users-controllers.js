@@ -1,5 +1,5 @@
 const {validationResult} = require('express-validator')
-const bcrypth = require('bcryptjs')
+const bcrypt = require('bcryptjs')
 
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
@@ -53,7 +53,7 @@ const signup = async (req, res, next) => {
   let hashedPassword
 
   try {
-    hashedPassword = await bcrypth.hash(password, 12)
+    hashedPassword = await bcrypt.hash(password, 12)
   } catch (e) {
     return next(
       new HttpError('Could not create the user', 500)
@@ -98,12 +98,27 @@ const login = async (req, res, next) => {
     }
 
     // check if the user identified and the password valid
-    if (!userIdentified || userIdentified.password !== password) {
+    if (!userIdentified) {
         return next(
             new HttpError('Could not identify a user, credentials seem wrong', 401)
         )        
     }
 
+    let isValidPassword = false
+    try {
+      isValidPassword = await bcrypt.compare(password, userIdentified.password)
+    } catch (e) {
+      return next(
+        new HttpError('Could not log in, credentials seem wrong', 500)
+      )        
+    }
+
+    if (!isValidPassword) {
+      return next(
+        new HttpError('Could not identify a user, credentials seem wrong', 401)
+      )        
+    }
+    
     // respond with a message
     res.json({user: userIdentified.toObject({getters: true})})
 }
