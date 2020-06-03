@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken')
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
 
+const {JWT_KEY} = process.env
+
 const getUsers = async (req, res, next) => {
   // fetch users
   let users
@@ -85,7 +87,7 @@ const signup = async (req, res, next) => {
   try {
     token = jwt.sign(
       {userId: userCreated.id, email: userCreated.email},
-      'temporary_code',
+      JWT_KEY,
       {expiresIn: '1h'}
     )
   } catch (e) {
@@ -142,7 +144,7 @@ const login = async (req, res, next) => {
     try {
       token = jwt.sign(
         {userId: userIdentified.id, email: userIdentified.email},
-        'temporary_code',
+        JWT_KEY,
         {expiresIn: '1h'}
       )
     } catch (e) {
