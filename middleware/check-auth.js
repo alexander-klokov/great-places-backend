@@ -5,6 +5,9 @@ const HttpError = require('../models/http-error')
 const {JWT_KEY} = process.env
 
 module.exports = (req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next()
+  }
   try {
     const token = req.headers.authorization // 'Bearer TOKEN'
       .split(' ')[1]

@@ -167,6 +167,12 @@ const updatePlace = async (req, res, next) => {
       new HttpError('Could not find a place for the provided id.', 404)
     )
   }
+
+  if (placeToUpdate.creator.toString() !== req.userData.userId) {
+    return next(
+      new HttpError('You are not allowed to edit this place.', 401)
+    )
+  }
   
   // update the place
   placeToUpdate.title = title
