@@ -75,8 +75,7 @@ const createPlace = async (req, res, next) => {
   const {
     title, 
     description, 
-    address, 
-    creator
+    address 
   } = req.body
 
   // placeDate = location (lat and lng) + formatted address
@@ -98,13 +97,13 @@ const createPlace = async (req, res, next) => {
     location,
     address: formattedAddress,
     image: req.file.path,
-    creator
+    creator: req.userData.userId
   })
 
   // fetch the user associated with the place created
   let user
   try {
-    user = await User.findById(creator)
+    user = await User.findById(req.userData.userId)
   } catch (e) {
     return next (
       new HttpError('Could not fetch the user associated with the place created', 404)
