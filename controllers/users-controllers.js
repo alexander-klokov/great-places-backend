@@ -121,7 +121,7 @@ const login = async (req, res, next) => {
     // check if the user identified and the password valid
     if (!userIdentified) {
         return next(
-            new HttpError('Could not identify a user, credentials seem wrong', 401)
+            new HttpError('Could not identify a user, credentials seem wrong', 403)
         )        
     }
 
@@ -136,7 +136,7 @@ const login = async (req, res, next) => {
 
     if (!isValidPassword) {
       return next(
-        new HttpError('Could not identify a user, credentials seem wrong', 401)
+        new HttpError('Could not identify a user, credentials seem wrong', 403)
       )        
     }
 

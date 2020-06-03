@@ -213,6 +213,12 @@ const deletePlace = async (req, res, next) => {
     )
   }
 
+  if (placeToDelete.creator.id !== req.userData.userId) {
+    return next(
+      new HttpError('You are not allowed to delete this place.', 403)
+    )
+  }
+
   const imagePath = placeToDelete.image
 
   // delete the place and adjust the associated user info

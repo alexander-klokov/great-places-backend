@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
     next()
   } catch (e) {
     return next(
-        new HttpError('Authentification failed', 401)
+        new HttpError('Authentification failed', 403)
     )
   }
 }
