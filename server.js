@@ -52,5 +52,5 @@ const MONGO_URL =
 
 mongoose
   .connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true})
-  .then(() => server.listen(5000))
+  .then(() => server.listen(process.env.PORT || 5000))
   .catch(e => console.error(e))
